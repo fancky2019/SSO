@@ -94,17 +94,29 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
          java中命名不能以-连接，转换成_。
         client_id： client_id：
         client_secret：client_secret
+
+         硬编码
          */
         clients.inMemory()
-                .withClient("client_id")
+                .withClient("client_id")//客户端ID和Secret
                 .secret(passwordEncoder.encode("client_secret"))//这里密码需要进行加密
                 .accessTokenValiditySeconds(3600)
                 .refreshTokenValiditySeconds(864000) //设置刷新令牌失效时间864000
                 .redirectUris("http://localhost:9002/login") //单点登录时配置，访问客户端需要授权的接口，会跳转到该路径
                 .autoApprove(true) //自动授权配置
                 .scopes("all")
+                .authorizedGrantTypes("authorization_code","password","refresh_token")
+                .and()//在一个Memory中添加多个客户端
+                .withClient("client_id2")
+                .secret(passwordEncoder.encode("client_secret2"))//这里密码需要进行加密
+                .scopes("all")
                 .authorizedGrantTypes("authorization_code","password","refresh_token");
+
+
+        // 把客户端信息配置在数据库中
+//        clients.jdbc(dataSource())
     }
+
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) {

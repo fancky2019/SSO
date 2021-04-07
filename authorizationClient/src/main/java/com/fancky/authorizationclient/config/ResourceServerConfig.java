@@ -29,7 +29,6 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
-
         accessTokenConverter.setSigningKey("test_key");
         accessTokenConverter.setVerifierKey("test_key");
         return accessTokenConverter;
