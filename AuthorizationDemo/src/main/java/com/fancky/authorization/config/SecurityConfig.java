@@ -29,19 +29,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf()
                 .disable()////关跨域保护
                 .authorizeRequests()
-                .antMatchers("/oauth/**", "/login/**", "/logout/**")//允许认证、登录、登出
+                .antMatchers("/oauth/**", "/login/**", "/logout/**","/authentication/form")//允许认证、登录、登出
                 .permitAll()
                 .anyRequest()
                 .authenticated()////所有请求都需要通过认证
                 .and()
                 .formLogin()
-                .permitAll();
-
-        // 表单登录
-        http.formLogin()
                 .loginPage("/user/login")// 登录页面
-                .loginProcessingUrl("/authentication/form");//自定义表单请求路径
+                .loginProcessingUrl("/authentication/form")
+                .permitAll();
         http.httpBasic().disable();
+
+
+//        http.csrf().disable();
+//        //首页所有人都可以访问
+//        http.authorizeRequests().antMatchers("/").permitAll()
+//                .antMatchers("/user/**").hasRole("ADMIN");
+//        http.formLogin().loginPage("/user/login").loginProcessingUrl("/authentication/form");
+
+
 
     }
 }
