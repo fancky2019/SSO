@@ -7,7 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.builders.JdbcClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -23,6 +25,7 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
 
 @Configuration
 @EnableAuthorizationServer
@@ -50,6 +53,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Autowired
     private JwtTokenEnhancer jwtTokenEnhancer;
+
+
+    @Autowired
+    @Qualifier("dataSource")
+    private DataSource dataSource;
 
     /**
      * 使用密码模式需要配置
@@ -90,6 +98,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+
+
         /*
          java中命名不能以-连接，转换成_。
         client_id： client_id：
@@ -113,8 +123,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authorizedGrantTypes("authorization_code","password","refresh_token");
 
 
-        // 把客户端信息配置在数据库中
-//        clients.jdbc(dataSource())
+//       //$2a$10$o3ZPuHqWBXjPV7mLf25nxutni5/4Z2A9yNQg6LYtIGBMS3K4c31Rq
+//        String encoderSecret = passwordEncoder.encode("test_key");
+//        // 把客户端信息配置在数据库中
+//        clients.jdbc(dataSource)
+//         .passwordEncoder(passwordEncoder);//数据库中secret不采用铭文
     }
 
 

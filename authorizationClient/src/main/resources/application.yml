@@ -19,6 +19,7 @@ security:
       user-authorization-uri: ${oauth2-server-url}/oauth/authorize
       # post 方式获取，见postman
       access-token-uri: ${oauth2-server-url}/oauth/token
+      use-current-uri: false
     resource:
       jwt:
         key-uri: ${oauth2-server-url}/oauth/token_key
