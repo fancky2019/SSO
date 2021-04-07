@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Jwt内容增强器
+ * Jwt内容增强器，可以在JWT中添加额外的信息
  */
 
 public class JwtTokenEnhancer implements TokenEnhancer {

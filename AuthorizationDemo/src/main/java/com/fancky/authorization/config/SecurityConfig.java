@@ -27,12 +27,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf()
-                .disable()
+                .disable()////关跨域保护
                 .authorizeRequests()
-                .antMatchers("/oauth/**", "/login/**", "/logout/**")
+                .antMatchers("/oauth/**", "/login/**", "/logout/**")//允许认证、登录、登出
                 .permitAll()
                 .anyRequest()
-                .authenticated()
+                .authenticated()////所有请求都需要通过认证
                 .and()
                 .formLogin()
                 .permitAll();
