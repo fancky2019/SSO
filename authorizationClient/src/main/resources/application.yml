@@ -1,0 +1,28 @@
+server:
+  port: 9002
+  servlet:
+    session:
+      cookie:
+        name: oauth2-client #防止Cookie冲突，冲突会导致登录验证不通过
+#    context-path: /client
+
+oauth2-server-url: http://localhost:9001/
+
+spring:
+  application:
+    name: oauth2-client
+security:
+  oauth2: #与oauth2-server对应的配置
+    client:
+      client-id: client_id  #前端body传参，参数名称是client_id保持一致
+      client-secret: client_secret
+      user-authorization-uri: ${oauth2-server-url}/oauth/authorize
+      # post 方式获取，见postman
+      access-token-uri: ${oauth2-server-url}/oauth/token
+    resource:
+      jwt:
+        key-uri: ${oauth2-server-url}/oauth/token_key
+        #test_key 否则Error creating bean with name 'jwtTokenEnhancer' defined in
+        key-value: test_key
+#    authorization:
+#      check-token-access: ${oauth2-server-url}/oauth/check_token
