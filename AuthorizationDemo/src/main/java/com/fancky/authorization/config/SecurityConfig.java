@@ -27,9 +27,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf()
-                .disable()////关跨域保护
-                .authorizeRequests()
-                .antMatchers("/oauth/**", "/login/**", "/logout/**","/authentication/form")//允许认证、登录、登出
+                .disable();////关跨域保护
+        http.authorizeRequests()
+                .antMatchers("/oauth/**", "/login/**", "/login","/logout/**", "/authentication/form","/login**","/oauth/authorize")//允许认证、登录、登出
                 .permitAll()
                 .anyRequest()
                 .authenticated()////所有请求都需要通过认证
@@ -37,15 +37,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/user/login")// 登录页面
                 .loginProcessingUrl("/authentication/form")
-                .permitAll();
-        http.httpBasic().disable();
+                .permitAll();;
+//        http.httpBasic().disable();
 
 
-//        http.csrf().disable();
-//        //首页所有人都可以访问
-//        http.authorizeRequests().antMatchers("/").permitAll()
-//                .antMatchers("/user/**").hasRole("ADMIN");
-//        http.formLogin().loginPage("/user/login").loginProcessingUrl("/authentication/form");
+//        http.formLogin()// 表单登录  来身份认证
+//                .loginPage("/user/login")// 登录页面
+//                .loginProcessingUrl("/authentication/form")// 自定义登录路径
+//                .and()
+//                .authorizeRequests()// 对请求授权
+//                // error  127.0.0.1 将您重定向的次数过多
+//                .antMatchers("/oauth/**","/user/login","/login/**", "/login","/logout/**", "/authentication/form")//允许认证、登录、登出
+//                .permitAll()// 这些页面不需要身份认证,其他请求需要认证
+//                .anyRequest() // 任何请求
+//                .authenticated()//; // 都需要身份认证
+//                .and()
+//                .csrf().disable();// 禁用跨站攻击
 
 
 

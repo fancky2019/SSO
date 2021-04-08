@@ -1,6 +1,10 @@
 #注意每个属性：（冒号）后要有一个空格
 server:
   port: 9001
+  servlet:
+    session:
+      cookie:
+        name: oauth2-server #防止Cookie冲突，冲突会导致登录验证不通过
 #  servlet:
 #    context-path: /auth#  servlet:
 #    context-path: /auth

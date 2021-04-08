@@ -108,26 +108,35 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
          硬编码
          */
         clients.inMemory()
-                .withClient("client_id")//客户端ID和Secret
+                .withClient("client_id1")//客户端ID和Secret
                 .secret(passwordEncoder.encode("client_secret"))//这里密码需要进行加密
                 .accessTokenValiditySeconds(3600)
                 .refreshTokenValiditySeconds(864000) //设置刷新令牌失效时间864000
                 .redirectUris("http://localhost:9002/login") //单点登录时配置，访问客户端需要授权的接口，会跳转到该路径
                 .autoApprove(true) //自动授权配置
+                .resourceIds("project_api")
                 .scopes("all")
                 .authorizedGrantTypes("authorization_code","password","refresh_token")
                 .and()//在一个Memory中添加多个客户端
                 .withClient("client_id2")
                 .secret(passwordEncoder.encode("client_secret2"))//这里密码需要进行加密
+                .accessTokenValiditySeconds(3600)
+                .refreshTokenValiditySeconds(864000) //设置刷新令牌失效时间864000
+                .redirectUris("http://localhost:9002/login") //单点登录时配置，访问客户端需要授权的接口，会跳转到该路径
+                .autoApprove(true) //自动授权配置
+                .resourceIds("project_api")
                 .scopes("all")
                 .authorizedGrantTypes("authorization_code","password","refresh_token");
 
 
+
+
 //       //$2a$10$o3ZPuHqWBXjPV7mLf25nxutni5/4Z2A9yNQg6LYtIGBMS3K4c31Rq
 //        String encoderSecret = passwordEncoder.encode("test_key");
-//        // 把客户端信息配置在数据库中
+////         把客户端信息配置在数据库中
 //        clients.jdbc(dataSource)
-//         .passwordEncoder(passwordEncoder);//数据库中secret不采用铭文
+//         .passwordEncoder(passwordEncoder);//数据库中secret不采用明文
+        int m=0;
     }
 
 
