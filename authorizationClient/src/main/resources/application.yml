@@ -14,7 +14,7 @@ spring:
 security:
   oauth2: #与oauth2-server对应的配置
     client:
-      client-id: client_id  #前端body传参，参数名称是client_id保持一致
+      client-id: client_id1  #前端body传参，参数名称是client_id保持一致
       client-secret: client_secret
       user-authorization-uri: ${oauth2-server-url}/oauth/authorize
       # post 方式获取，见postman
