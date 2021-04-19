@@ -18,7 +18,7 @@ public class JwtTokenStoreConfig {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
-        accessTokenConverter.setSigningKey("test_key");//配置JWT使用的秘钥
+        accessTokenConverter.setSigningKey("JWT_Sign_Key");//配置JWT使用的秘钥。注意：要和客户端的保持一致
         return accessTokenConverter;
     }
 

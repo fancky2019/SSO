@@ -1,22 +1,33 @@
 package com.fancky.authorization.config;
 
+import com.fancky.authorization.service.UserDetailsServiceImp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.sql.DataSource;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
     @Bean
     @Override
@@ -24,37 +35,54 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+
+    /**
+     * 将 check_token 暴露出去，否则资源服务器访问时报403错误
+     *
+     * @param web
+     * @throws Exception
+     */
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        //暴露不需要权限的url
+        web.ignoring().antMatchers("/oauth/check_token");
+    }
+
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.csrf()
-                .disable();////关跨域保护
-        http.authorizeRequests()
-                .antMatchers("/oauth/**", "/login/**", "/login","/logout/**", "/authentication/form","/login**","/oauth/authorize")//允许认证、登录、登出
-                .permitAll()
-                .anyRequest()
-                .authenticated()////所有请求都需要通过认证
-                .and()
-                .formLogin()
-                .loginPage("/user/login")// 登录页面
-                .loginProcessingUrl("/authentication/form")
-                .permitAll();;
+//        http.csrf()
+//                .disable();////关跨域保护
+//        http.authorizeRequests()
+//                .antMatchers("/oauth/**", "/login","/login/**","/logout/**", "/authentication/form","/oauth/authorize","/"
+//                       ,"/user/login")//允许认证、登录、登出
+//                .permitAll()
+//                .anyRequest()
+//                .authenticated()////所有请求都需要通过认证
+//                .and()
+//                .formLogin()
+//                .loginPage("/user/login")// 登录页面
+//                .loginProcessingUrl("/authentication/form")
+////                .defaultSuccessUrl("/",false)
+//                .permitAll();;
 //        http.httpBasic().disable();
 
 
-//        http.formLogin()// 表单登录  来身份认证
-//                .loginPage("/user/login")// 登录页面
-//                .loginProcessingUrl("/authentication/form")// 自定义登录路径
-//                .and()
-//                .authorizeRequests()// 对请求授权
-//                // error  127.0.0.1 将您重定向的次数过多
-//                .antMatchers("/oauth/**","/user/login","/login/**", "/login","/logout/**", "/authentication/form")//允许认证、登录、登出
-//                .permitAll()// 这些页面不需要身份认证,其他请求需要认证
-//                .anyRequest() // 任何请求
-//                .authenticated()//; // 都需要身份认证
-//                .and()
-//                .csrf().disable();// 禁用跨站攻击
-
-
+        http   // 配置登录页并允许访问
+                .formLogin()
+                .loginPage("/user/login")// 登录页面
+                .loginProcessingUrl("/authentication/form")
+                .defaultSuccessUrl("/", false)
+                .permitAll()
+                // 配置Basic登录
+                //.and().httpBasic()
+                // 配置登出页面
+                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
+                .and().authorizeRequests().antMatchers("/oauth/**", "/login/**", "/authentication/form", "/user/login", "/logout/**").permitAll()
+                // 其余所有请求全部需要鉴权认证
+                .anyRequest().authenticated()
+                // 关闭跨域保护;
+                .and().csrf().disable();
 
     }
 }
