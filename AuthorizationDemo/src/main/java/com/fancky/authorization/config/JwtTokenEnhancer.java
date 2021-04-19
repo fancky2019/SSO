@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Jwt内容增强器，可以在JWT中添加额外的信息
+ * Jwt内容增强器，可以在JWT中添加额外的信息.
+ * 实际设计将权限信息放在jwt中，如果不采用OAuth2框架的表结构
  */
 
 public class JwtTokenEnhancer implements TokenEnhancer {

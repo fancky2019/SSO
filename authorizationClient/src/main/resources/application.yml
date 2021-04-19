@@ -24,6 +24,6 @@ security:
       jwt:
         key-uri: ${oauth2-server-url}/oauth/token_key
         #test_key 否则Error creating bean with name 'jwtTokenEnhancer' defined in
-        key-value: test_key
+        key-value: JWT_Sign_Key
 #    authorization:
 #      check-token-access: ${oauth2-server-url}/oauth/check_token

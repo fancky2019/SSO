@@ -15,7 +15,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.endpoint.TokenKeyEndpoint;
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -107,36 +110,39 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
          硬编码
          */
-        clients.inMemory()
-                .withClient("client_id1")//客户端ID和Secret
-                .secret(passwordEncoder.encode("client_secret"))//这里密码需要进行加密
-                .accessTokenValiditySeconds(3600)
-                .refreshTokenValiditySeconds(864000) //设置刷新令牌失效时间864000
-                .redirectUris("http://localhost:9002/login") //单点登录时配置，访问客户端需要授权的接口，会跳转到该路径
-                .autoApprove(true) //自动授权配置
-                .resourceIds("project_api")
-                .scopes("all")
-                .authorizedGrantTypes("authorization_code","password","refresh_token")
-                .and()//在一个Memory中添加多个客户端
-                .withClient("client_id2")
-                .secret(passwordEncoder.encode("client_secret2"))//这里密码需要进行加密
-                .accessTokenValiditySeconds(3600)
-                .refreshTokenValiditySeconds(864000) //设置刷新令牌失效时间864000
-                .redirectUris("http://localhost:9002/login") //单点登录时配置，访问客户端需要授权的接口，会跳转到该路径
-                .autoApprove(true) //自动授权配置
-                .resourceIds("project_api")
-                .scopes("all")
-                .authorizedGrantTypes("authorization_code","password","refresh_token");
+//        clients.inMemory()
+//                .withClient("client_id1")//客户端ID和client_secret
+//                .secret(passwordEncoder.encode("client_secret"))//设置client_secret这里密码需要进行加密
+//                .accessTokenValiditySeconds(3600)
+//                .refreshTokenValiditySeconds(864000) //设置刷新令牌失效时间864000
+//                .redirectUris("http://localhost:9002/login") //单点登录时配置，访问客户端需要授权的接口，会跳转到该路径
+//                .autoApprove(true) //自动授权配置
+//                .resourceIds("project_api")
+//                .scopes("all")
+//                .authorizedGrantTypes("authorization_code","password","refresh_token")
+//                .and()//在一个Memory中添加多个客户端
+//                .withClient("client_id2")
+//                .secret(passwordEncoder.encode("client_secret2"))//这里密码需要进行加密
+//                .accessTokenValiditySeconds(3600)
+//                .refreshTokenValiditySeconds(864000) //设置刷新令牌失效时间864000
+//                .redirectUris("http://localhost:9002/login") //单点登录时配置，访问客户端需要授权的接口，会跳转到该路径
+//                .autoApprove(true) //自动授权配置
+//                .resourceIds("project_api")
+//                .scopes("all")
+//                .authorizedGrantTypes("authorization_code","password","refresh_token");
 
 
+        //注意：客户端client_secret在数据库中是已密文的形式存在，要设置passwordEncoder。
+       //$2a$10$o3ZPuHqWBXjPV7mLf25nxutni5/4Z2A9yNQg6LYtIGBMS3K4c31Rq
+        //String encoderSecret = passwordEncoder.encode("client_secret");
+        //把客户端信息配置在数据库中
+        clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
 
+        //DefaultOAuth2RequestFactory
+        // 从数据库中读取客户端配置
+        clients.withClientDetails(jdbcClientDetailsService());
 
-//       //$2a$10$o3ZPuHqWBXjPV7mLf25nxutni5/4Z2A9yNQg6LYtIGBMS3K4c31Rq
-//        String encoderSecret = passwordEncoder.encode("test_key");
-////         把客户端信息配置在数据库中
-//        clients.jdbc(dataSource)
-//         .passwordEncoder(passwordEncoder);//数据库中secret不采用明文
-        int m=0;
+        int m = 0;
     }
 
 
@@ -150,9 +156,16 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 //        security.checkTokenAccess("permitAll()");
     }
 
-//    @Bean
+    //    @Bean
 //    public TokenKeyEndpoint tokenKeyEndpoint() {
 //        return new TokenKeyEndpoint(jwtAccessTokenConverter);
 //    }
+    @Bean
+    public ClientDetailsService jdbcClientDetailsService() {
+        // 基于JDBC实现，需要实现在数据库配置客户端信息以及密码加密方式
+        JdbcClientDetailsService detailsService = new JdbcClientDetailsService(dataSource);
+        detailsService.setPasswordEncoder(passwordEncoder);
+        return detailsService;
+    }
 
 }

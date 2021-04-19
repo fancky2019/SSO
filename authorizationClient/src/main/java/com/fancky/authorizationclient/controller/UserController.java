@@ -34,4 +34,9 @@ public class UserController {
         return authentication;
     }
 
+    @GetMapping("")
+    public void user(Authentication authentication) {
+        int m = 0;
+    }
+
 }
