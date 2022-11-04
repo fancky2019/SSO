@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("")
 public class UserController {
 
-    @GetMapping("/getUser")
+    @GetMapping("/user/getUser")
     @ResponseBody
     public Object getUser(Authentication authentication, HttpServletRequest request) {
         String header = request.getHeader("Authorization");
@@ -27,10 +27,17 @@ public class UserController {
                 .getBody();
     }
 
-    @RequestMapping("/login")
+    @RequestMapping("/user/login")
     // @ResponseBody// 就是返回字符串了
     public String index() {
         //返回值给页面
         return "login/index";
+    }
+
+    @RequestMapping("/loginSuccess")
+    // @ResponseBody// 就是返回字符串了
+    public String loginSuccess() {
+        //返回值给页面
+        return "index";
     }
 }

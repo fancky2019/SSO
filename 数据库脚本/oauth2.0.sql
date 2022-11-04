@@ -8,9 +8,9 @@
 -- oauth_approvals：授权记录
 -- oauth_client_token:  客户端用来记录token信息
 
-SHOW CREATE TABLE test.`oauth_client_details`;
-
-SELECT  *  FROM test.`oauth_client_details`;
+-- SHOW CREATE TABLE test.`oauth_client_details`;
+-- 
+-- SELECT  *  FROM test.`oauth_client_details`;
 
 
 DROP TABLE IF EXISTS `oauth_client_details`;
@@ -26,7 +26,7 @@ CREATE TABLE `oauth_client_details` (
   `refresh_token_validity` INT DEFAULT NULL COMMENT '更新令牌有效时间值(单位:秒)',
   `additional_information` VARCHAR(255) DEFAULT NULL COMMENT '预留字段',
   `autoapprove` VARCHAR(255) DEFAULT NULL COMMENT '用户是否自动Approval操作'
-) ENGINE=INNODB DEFAULT CHARSET=utf8
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 
 
@@ -51,7 +51,7 @@ CREATE TABLE `oauth_approvals` (
 `lastModifiedAt` DATETIME DEFAULT NULL COMMENT '最终修改时间'
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-`test``oauth_client_details`
+
 
 DROP TABLE IF EXISTS `oauth_client_token`;
 CREATE TABLE `oauth_client_token` (

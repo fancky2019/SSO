@@ -75,7 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/user/login")// 登录页面
                 .loginProcessingUrl("/authentication/form")
-                .defaultSuccessUrl("/", false)
+                .defaultSuccessUrl("/loginSuccess", false)
                 .permitAll()
                 // 配置Basic登录
                 //.and().httpBasic()
