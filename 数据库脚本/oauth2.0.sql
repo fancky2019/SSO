@@ -1,3 +1,82 @@
+--  ------------------------github  ---------------------------
+-- https://github.com/spring-attic/spring-security-oauth/blob/main/spring-security-oauth2/src/test/resources/schema.sql       
+    
+-- -- used in tests that use HSQL
+-- create table oauth_client_details (
+--   client_id VARCHAR(256) PRIMARY KEY,
+--   resource_ids VARCHAR(256),
+--   client_secret VARCHAR(256),
+--   scope VARCHAR(256),
+--   authorized_grant_types VARCHAR(256),
+--   web_server_redirect_uri VARCHAR(256),
+--   authorities VARCHAR(256),
+--   access_token_validity INTEGER,
+--   refresh_token_validity INTEGER,
+--   additional_information VARCHAR(4096),
+--   autoapprove VARCHAR(256)
+-- );
+-- 
+-- create table oauth_client_token (
+--   token_id VARCHAR(256),
+--   token LONGVARBINARY,
+--   authentication_id VARCHAR(256) PRIMARY KEY,
+--   user_name VARCHAR(256),
+--   client_id VARCHAR(256)
+-- );
+-- 
+-- create table oauth_access_token (
+--   token_id VARCHAR(256),
+--   token LONGVARBINARY,
+--   authentication_id VARCHAR(256) PRIMARY KEY,
+--   user_name VARCHAR(256),
+--   client_id VARCHAR(256),
+--   authentication LONGVARBINARY,
+--   refresh_token VARCHAR(256)
+-- );
+-- 
+-- create table oauth_refresh_token (
+--   token_id VARCHAR(256),
+--   token LONGVARBINARY,
+--   authentication LONGVARBINARY
+-- );
+-- 
+-- create table oauth_code (
+--   code VARCHAR(256), authentication LONGVARBINARY
+-- );
+-- 
+-- create table oauth_approvals (
+-- 	userId VARCHAR(256),
+-- 	clientId VARCHAR(256),
+-- 	scope VARCHAR(256),
+-- 	status VARCHAR(10),
+-- 	expiresAt TIMESTAMP,
+-- 	lastModifiedAt TIMESTAMP
+-- );
+-- 
+-- 
+-- -- customized oauth_client_details table
+-- create table ClientDetails (
+--   appId VARCHAR(256) PRIMARY KEY,
+--   resourceIds VARCHAR(256),
+--   appSecret VARCHAR(256),
+--   scope VARCHAR(256),
+--   grantTypes VARCHAR(256),
+--   redirectUrl VARCHAR(256),
+--   authorities VARCHAR(256),
+--   access_token_validity INTEGER,
+--   refresh_token_validity INTEGER,
+--   additionalInformation VARCHAR(4096),
+--   autoApproveScopes VARCHAR(256)
+-- );
+
+
+-- --------------------------------------------
+
+
+
+
+
+
 
 -- Oauth2相关的5张表：
 
@@ -84,25 +163,58 @@ PRIMARY KEY (`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='用户信息表';
 
 
-INSERT INTO authority  VALUES(1,'ROLE_ADMIN');
-INSERT INTO authority VALUES(2,'ROLE_ADMIN');
-INSERT INTO authority VALUES(3,'ROLE_CLIENT');
-INSERT INTO credentials VALUES(1,b'1','oauth_admin','$2a$10$BurTWIy5NTF9GJJH4magz.9Bd4bBurWYG8tmXxeQh1vs7r/wnCFG2','0');
-INSERT INTO credentials VALUES(2,b'1','resource_admin','$2a$10$BurTWIy5NTF9GJJH4magz.9Bd4bBurWYG8tmXxeQh1vs7r/wnCFG2','0');
-INSERT INTO credentials  VALUES(3,b'1','project_admin','$2a$10$BurTWIy5NTF9GJJH4magz.9Bd4bBurWYG8tmXxeQh1vs7r/wnCFG2','0');
-INSERT INTO credentials_authorities VALUE (1,1);
-INSERT INTO credentials_authorities VALUE (2,2);
-INSERT INTO credentials_authorities VALUE (3,3);
+-- INSERT INTO authority  VALUES(1,'ROLE_ADMIN');
+-- INSERT INTO authority VALUES(2,'ROLE_ADMIN');
+-- INSERT INTO authority VALUES(3,'ROLE_CLIENT');
+-- INSERT INTO credentials VALUES(1,b'1','oauth_admin','$2a$10$BurTWIy5NTF9GJJH4magz.9Bd4bBurWYG8tmXxeQh1vs7r/wnCFG2','0');
+-- INSERT INTO credentials VALUES(2,b'1','resource_admin','$2a$10$BurTWIy5NTF9GJJH4magz.9Bd4bBurWYG8tmXxeQh1vs7r/wnCFG2','0');
+-- INSERT INTO credentials  VALUES(3,b'1','project_admin','$2a$10$BurTWIy5NTF9GJJH4magz.9Bd4bBurWYG8tmXxeQh1vs7r/wnCFG2','0');
+-- INSERT INTO credentials_authorities VALUE (1,1);
+-- INSERT INTO credentials_authorities VALUE (2,2);
+-- INSERT INTO credentials_authorities VALUE (3,3);
 
+
+-- 参考链接 https://blog.csdn.net/qq15035899256/article/details/129541483?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1-129541483-blog-127025830.235^v38^pc_relevant_sort_base1&spm=1001.2101.3001.4242.2&utm_relevant_index=2
+
+-- grant_type 来表明我们的授权方式  ①客户端模式（Client Credentials）
+-- 获取授权码的回调地址 http://localhost:9001/loginSuccess
+-- autoapprove  true 自动授权，不会弹出手动授权对话网页
 -- "authorization_code","password","refresh_token"   ROLE_ADMIN  authorization_code,password,refresh_token   localhost
+
+-- authorized_grant_types 值
+-- authorization_code 授权码模式
+-- password  密码模式
+-- client_credentials 客户端模式
+-- implicit
+-- refresh_token 刷新token:token过期用refresh_token获取token，获取方式指定
+ --              grant_type 指定为refresh_token,client_id、client_secret、
+--               refresh_token 
+
+-- 认证码使用一次就作废 重新获取http://localhost:9001/oauth/authorize?client_id=client_id1&response_type=code
+
+
+-- 权限作用域配置
+--  字符服务器配置 scope access("#oauth2.hasScope('book')"); 
+ -- 认证端配置  .scopes("book", "user", "borrow") 多个应该用逗号分割
+ 
+ -- 过期时间单位秒，token 过期报错，只要不过期，token和refresh_token就可用
+ --  "error": "invalid_token", "error_description": "Access token expired:
+ 
+ 
 TRUNCATE TABLE  oauth_client_details;
-INSERT INTO oauth_client_details VALUES('client_id1','project_api', '$2a$10$Z9UdI243Oan3o9GNwXve4.xdFme64BeRnGC92TLVEKHyi7Lg70LxO', 'all', 'authorization_code,password,refresh_token', 'http://localhost:9002/login', 'ROLE_ADMIN', 3600, 864000, NULL, 'true');
-
-TRUNCATE TABLE  oauth_client_details;
- INSERT INTO oauth_client_details VALUES('client_id1', 'project_api', '$2a$10$o3ZPuHqWBXjPV7mLf25nxutni5/4Z2A9yNQg6LYtIGBMS3K4c31Rq', 'all',    'authorization_code,refresh_token,password', 'http://localhost:9002/login', NULL, 3600, 36000, NULL, 'true');
-
-TRUNCATE TABLE  oauth_client_details;
- INSERT INTO oauth_client_details VALUES('client_id1', 'project_api', 'client_secret', 'all',    'authorization_code,refresh_token,password', 'http://localhost:9002/login', NULL, 3600, 36000, NULL, 'true');
+INSERT INTO oauth_client_details VALUES('client_id1','project_api', '$2a$10$Z9UdI243Oan3o9GNwXve4.xdFme64BeRnGC92TLVEKHyi7Lg70LxO', 'all', 'authorization_code,password,refresh_token,client_credentials,implicit', 'http://localhost:9001/loginSuccess', 'ROLE_ADMIN', 3600, 864000, NULL, 'true');
 
 
 
+
+select  *  from oauth_client_details;
+
+truncate  table oauth_access_token;
+select  *  FROM oauth_access_token;
+
+
+select  *  FROM oauth_refresh_token
+
+
+
+select  *  from oauth_approvals

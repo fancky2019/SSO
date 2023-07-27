@@ -1,7 +1,10 @@
 package com.fancky.authorizationclient.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,24 +22,40 @@ public class UserController {
       没有权限会报错：Whitelabel Error Page
      */
 
-
     @GetMapping("/getUser")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    //基于角色的，实际基于角色动态从数据库获取加白名单方式
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Object getUser(Authentication authentication) {
 
         return authentication;
     }
 
+    /*
+  没有加入白名单，需要认证权限
+   */
     @GetMapping("/getCommonData")
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
+//    @PreAuthorize("hasAnyRole('ROLE_USER')")
     public Object getCommonData(Authentication authentication) {
 
         return authentication;
     }
 
+    /*
+    需要认证权限
+     */
     @GetMapping("")
     public void user(Authentication authentication) {
         int m = 0;
     }
+
+    /*
+    加入白名单，不需要权限
+     */
+    @GetMapping("/permitAccess")
+    public String permitAccess( Authentication authentication) {
+
+       return "permitAccess";
+    }
+//
 
 }

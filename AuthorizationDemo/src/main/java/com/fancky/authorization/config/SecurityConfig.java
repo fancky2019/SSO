@@ -51,7 +51,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/oauth/check_token");
     }
 
-
     @Override
     public void configure(HttpSecurity http) throws Exception {
 //        http.csrf()
@@ -79,7 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 // 配置Basic登录
                 //.and().httpBasic()
-                // 配置登出页面
+                // 配置登出页面 默认为 /logout
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
                 .and().authorizeRequests().antMatchers("/oauth/**", "/login/**", "/authentication/form", "/user/login", "/logout/**").permitAll()
                 // 其余所有请求全部需要鉴权认证

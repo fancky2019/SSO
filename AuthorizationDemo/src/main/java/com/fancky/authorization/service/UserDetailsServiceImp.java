@@ -1,25 +1,26 @@
 package com.fancky.authorization.service;
 
-import com.fancky.authorization.entity.User;
+import com.fancky.authorization.entity.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import javax.websocket.server.ServerEndpoint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/*
+登录认证逻辑
+ */
 @Service
 public class UserDetailsServiceImp implements UserDetailsService {
-    private List<User> userList;
+    private List<UserInfo> userList;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -27,9 +28,14 @@ public class UserDetailsServiceImp implements UserDetailsService {
     public void initData() {
         String password = passwordEncoder.encode("123");
         userList = new ArrayList<>();
+//        //模仿从获取库中获取用户信息和用户的权限信息
+//        userList.add(new UserInfo("admin", password, AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN")));
+//        userList.add(new UserInfo("user", password, AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER")));
         //模仿从获取库中获取用户信息和用户的权限信息
-        userList.add(new User("admin", password, AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN")));
-        userList.add(new User("user", password, AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER")));
+        //权限采用rabc动态判断+白名单动态判断，不适用注解方式。
+        userList.add(new UserInfo("admin", password, null));
+        userList.add(new UserInfo("user", password, null));
+
     }
 
     @Override
@@ -39,7 +45,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
         用户信息从数据库获取，校验密码信息。
         校验之后获取权限信息
         */
-        List<User> findUserList = userList.stream().filter(user -> user.getUsername().equals(username)).collect(Collectors.toList());
+        List<UserInfo> findUserList = userList.stream().filter(user -> user.getUsername().equals(username)).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(findUserList)) {
             return findUserList.get(0);
         } else {

@@ -5,6 +5,7 @@ server:
     session:
       cookie:
         name: oauth2-server #防止Cookie冲突，冲突会导致登录验证不通过
+        path: /  #将认证中心和各个子系统的Cookie设置在同一路径下，在认证中心登出时，将Cookie一并删除，实现认证中心和各个子系统的登出
 #  servlet:
 #    context-path: /auth#  servlet:
 #    context-path: /auth
@@ -66,3 +67,8 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       #connection-test-query: SELECT 1
+  redis:
+    database: 3
+    host: 127.0.0.1
+    port: 6379
+    password: fancky123456

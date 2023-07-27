@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,13 +18,17 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.endpoint.TokenKeyEndpoint;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 import java.security.KeyPair;
 import java.util.ArrayList;
@@ -31,12 +36,13 @@ import java.util.List;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableAuthorizationServer
+//@EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+//    @Autowired
+//    private AuthorizationCodeServices authorizationCodeServices;
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -57,26 +63,53 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private JwtTokenEnhancer jwtTokenEnhancer;
 
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory ;
 
     @Autowired
     @Qualifier("dataSource")
     private DataSource dataSource;
+
+
+    public TokenStore redisTokenStore(){
+        return new RedisTokenStore(redisConnectionFactory) ;
+    }
+
+    public TokenStore JdbcTokenStore(){
+        return new JdbcTokenStore(dataSource) ;
+    }
 
     /**
      * 使用密码模式需要配置
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
-        TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
-        List<TokenEnhancer> delegates = new ArrayList<>();
-        delegates.add(jwtAccessTokenConverter);
-        enhancerChain.setTokenEnhancers(delegates);
-        endpoints.authenticationManager(authenticationManager)
+        endpoints
+                .authenticationManager(authenticationManager)
                 .userDetailsService(userDetailsServiceImp)
-                .tokenStore(jwtTokenStore) //配置令牌存储策略
-                .accessTokenConverter(jwtAccessTokenConverter)
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
-                .tokenEnhancer(enhancerChain);
+//                .tokenStore(JdbcTokenStore())//存储在数据库
+//                .tokenStore(jwtTokenStore) //配置令牌存储策略
+                .tokenStore(redisTokenStore())//存储在redis
+
+
+        ;
+
+
+
+//        // JWT密码模式
+//        TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
+//        List<TokenEnhancer> delegates = new ArrayList<>();
+//        delegates.add(jwtAccessTokenConverter);
+//        enhancerChain.setTokenEnhancers(delegates);
+//        endpoints.authenticationManager(authenticationManager)// 密码模式需要
+//               // .authorizationCodeServices(authorizationCodeServices) // 授权模式需要
+//                .userDetailsService(userDetailsServiceImp)
+//                .tokenStore(jwtTokenStore) //配置令牌存储策略
+//                .accessTokenConverter(jwtAccessTokenConverter)
+////                .reuseRefreshTokens(true)//设置为false时，每次通过refresh_token获得access_token时， 也会刷新refresh_token
+//                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
+//                .tokenEnhancer(enhancerChain);
 
 
 //        /**
@@ -101,7 +134,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-
 
         /*
          java中命名不能以-连接，转换成_。
@@ -137,7 +169,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         //String encoderSecret = passwordEncoder.encode("client_secret");
         //把客户端信息配置在数据库中
         clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
-
         //DefaultOAuth2RequestFactory
         // 从数据库中读取客户端配置
         clients.withClientDetails(jdbcClientDetailsService());
@@ -149,9 +180,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) {
         security.allowFormAuthenticationForClients();////表单认证（申请令牌）
+        //客户端需要获取token key 和校验token key 信息校验是否登录，此处设置获取权限
         security.tokenKeyAccess("isAuthenticated()"); //获取token_key 接口获取公钥 获取密钥需要身份认证，使用单点登录时必须配置
         security.checkTokenAccess("isAuthenticated()");//获取token
-
 
 //        security.checkTokenAccess("permitAll()");
     }
