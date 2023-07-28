@@ -86,3 +86,9 @@ security:
 logging:
   level:
     org.springframework.security: TRACE
+#mybatis log 日志显示配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+service1:
+  client-id: service1

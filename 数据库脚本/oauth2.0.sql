@@ -202,7 +202,7 @@ PRIMARY KEY (`id`)
  
  
 TRUNCATE TABLE  oauth_client_details;
-INSERT INTO oauth_client_details VALUES('client_id1','project_api', '$2a$10$Z9UdI243Oan3o9GNwXve4.xdFme64BeRnGC92TLVEKHyi7Lg70LxO', 'all', 'authorization_code,password,refresh_token,client_credentials,implicit', 'http://localhost:9001/loginSuccess', 'ROLE_ADMIN', 3600, 864000, NULL, 'true');
+INSERT INTO oauth_client_details VALUES('client_id1','project_api', '$2a$10$Z9UdI243Oan3o9GNwXve4.xdFme64BeRnGC92TLVEKHyi7Lg70LxO', 'service1,sevice2', 'authorization_code,password,refresh_token,client_credentials,implicit', 'http://localhost:9001/loginSuccess', 'ROLE_ADMIN', 3600, 864000, NULL, 'true');
 
 
 

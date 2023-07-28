@@ -2,7 +2,9 @@ package com.fancky.authorizationclient.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.env.EnvironmentUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -10,14 +12,17 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
 
@@ -34,7 +39,6 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public TokenStore redisTokenStore(){
         return new RedisTokenStore(redisConnectionFactory) ;
     }
-
 
     /*
     要和oauth_client_details表里该条配置的resource_ids一致
@@ -60,16 +64,6 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     }
   //endregion
 
-
-    @Override
-    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-//        resources.tokenStore(jwtTokenStore);
-        resources.tokenStore(redisTokenStore());
-
-        //nvalid token does not contain resource id (oauth2-resource)
-        resources.resourceId(DEMO_RESOURCE_ID);
-//        resources.resourceId(null);
-    }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -121,9 +115,42 @@ INSERT INTO oauth_client_details VALUES('client_id1','project_api', '$2a$10$Z9Ud
 
         http
                 .authorizeRequests().antMatchers("/login","/user/permitAccess").permitAll()
-                .anyRequest().access("#oauth2.hasScope('all')") //添加自定义规则
+                //Token必须要oauth_client_details配置的scope授权才可以访问此资源
+               // .anyRequest().access("#oauth2.hasScope('service1')")
+                //取代上面配置的scope权限，是否有访问该服务的权限。配置访问资源更细的rabc权限
+                //如果想要scope 权限判断，在canAccess从数据库中取scope
+                .anyRequest().access("@authService.canAccess(request,authentication)")
                 .and().csrf().disable();
-        //Token必须要有我们自定义scope授权才可以访问此资源
 
     }
+
+
+
+    //  .anyRequest().access 表达式可用
+    // 之后引入的bean是为了解决no bean resolver registered的问题
+    // https://github.com/spring-projects/spring-security-oauth/issues/730#issuecomment-219480394
+
+    @Autowired
+    private OAuth2WebSecurityExpressionHandler expressionHandler;
+    @Bean
+    public OAuth2WebSecurityExpressionHandler oAuth2WebSecurityExpressionHandler(ApplicationContext applicationContext) {
+        OAuth2WebSecurityExpressionHandler expressionHandler = new OAuth2WebSecurityExpressionHandler();
+        expressionHandler.setApplicationContext(applicationContext);
+        return expressionHandler;
+    }
+
+    @Override
+    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+//        resources.tokenStore(jwtTokenStore);
+        resources.tokenStore(redisTokenStore());
+
+        //nvalid token does not contain resource id (oauth2-resource)
+        resources.resourceId(DEMO_RESOURCE_ID);
+//        resources.resourceId(null);
+
+
+        resources.expressionHandler(expressionHandler);
+    }
+
+
 }
