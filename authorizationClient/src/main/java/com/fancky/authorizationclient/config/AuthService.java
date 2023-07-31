@@ -46,6 +46,7 @@ public class AuthService {
             if (!auth2Request.getScope().contains(clientId)) {
                 return false;
             }
+            return true;
 
         } else {
             QueryWrapper<OauthClientDetails> queryWrapper = new QueryWrapper<OauthClientDetails>();

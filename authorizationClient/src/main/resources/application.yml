@@ -75,7 +75,7 @@ security:
       access-token-uri: ${oauth2-server-url}/oauth/token
       use-current-uri: false
     resource:
-#      #Token信息获取和校验地址
+#      #Token信息获取和校验地址:到sso去校验。必须指定token-info-uri或key-uri或test_key
       token-info-uri: ${oauth2-server-url}/oauth/check_token
        #下面用jwt  方式存储，要指定key
 #      jwt:
