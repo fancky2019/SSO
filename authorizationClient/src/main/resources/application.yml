@@ -75,13 +75,15 @@ security:
       access-token-uri: ${oauth2-server-url}/oauth/token
       use-current-uri: false
     resource:
-#      #Token信息获取和校验地址:到sso去校验。必须指定token-info-uri或key-uri或test_key
+#      #Token信息获取和校验地址:到sso server去校验。必须指定token-info-uri或key-uri或test_key
       token-info-uri: ${oauth2-server-url}/oauth/check_token
        #下面用jwt  方式存储，要指定key
 #      jwt:
-#        key-uri: ${oauth2-server-url}/oauth/token_key
-#        注意这里要跟验证服务器的密钥一致，这样算出来的签名才会一致,配置获取token_ken的url即可
-        #test_key 否则Error creating bean with name 'jwtTokenEnhancer' defined in
+##        SSO server 获取盐的地址
+##        key-uri: ${oauth2-server-url}/oauth/token_key
+##        注意这里要跟验证服务器的密钥一致，这样算出来的签名才会一致,配置获取token_ken的url即可
+#        #test_key 否则Error creating bean with name 'jwtTokenEnhancer' defined in
+#        #配置了盐就不用到sso server 去校验。本服务就可以校验。
 #        key-value: JWT_Sign_Key
 logging:
   level:
