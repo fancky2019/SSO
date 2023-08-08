@@ -72,14 +72,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http   // 配置登录页并允许访问
                 .formLogin()
-                .loginPage("/user/login")// 登录页面
+                .loginPage("/user/login")// 自定义登录页面，不用原生的
                 .loginProcessingUrl("/authentication/form")
-                .defaultSuccessUrl("/loginSuccess", false)
+                //此处配置无效，取的是数据库oauth_client_details表里的配置
+               // .defaultSuccessUrl("https://www.baidu.com/", false)
                 .permitAll()
                 // 配置Basic登录
                 //.and().httpBasic()
-                // 配置登出页面 默认为 /logout
-                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
+                // 不用配置退出，RevokeTokenEndpoint写了退出逻辑。
+                // 退出成功之后由前端重定向到sso登录页， 配置登出页面 默认为 /logout
+              //  .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
                 .and().authorizeRequests().antMatchers("/oauth/**", "/login/**", "/authentication/form", "/user/login", "/logout/**").permitAll()
                 // 其余所有请求全部需要鉴权认证
                 .anyRequest().authenticated()

@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.fancky</groupId>
-    <artifactId>authorization-client</artifactId>
+    <artifactId>authorizationClient</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>authorization-client</name>
     <description>Demo project for Spring Boot</description>

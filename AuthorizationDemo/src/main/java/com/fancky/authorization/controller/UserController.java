@@ -63,6 +63,8 @@ public class UserController {
         //返回值给页面
         return "index";
     }
+    //退出功能 RevokeTokenEndpoint
+    //http://localhost:9001/oauth/logout?access_token=79e6e988-37a4-4b20-9bb3-5c4ee9d8389a
 
 
 

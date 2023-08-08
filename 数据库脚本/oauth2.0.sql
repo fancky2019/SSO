@@ -218,3 +218,71 @@ select  *  FROM oauth_refresh_token
 
 
 select  *  from oauth_approvals
+
+select *  from Inventory;
+
+-- truncate DDL 不可回滚，直接清空表不记日志, delete  dml 可回滚，记录事务日志
+--truncate  TABLE 不能用于有外键的表
+-- 禁用外键
+---启用or禁用指定表所有外键约束 
+alter table ApplyShipOrder  NOCHECK constraint all; 
+delete from  ApplyShipOrder;
+alter table ApplyShipOrder  CHECK constraint all;
+
+alter table ApplyShipOrderItem  NOCHECK constraint all; 
+delete from ApplyShipOrderItem;
+alter table ApplyShipOrderItem  CHECK constraint all;
+
+
+alter table ShipOrder  NOCHECK constraint all; 
+delete from ShipOrder;
+alter table ShipOrder  CHECK constraint all;
+
+alter table ShipOrderItem  NOCHECK constraint all; 
+delete from ShipOrderItem;
+alter table ShipOrderItem  CHECK constraint all;
+
+alter table ShipPickOrder  NOCHECK constraint all; 
+delete from ShipPickOrder;
+alter table ShipPickOrder  CHECK constraint all;
+truncate  TABLE ShipPickOrder;
+
+alter table ShipPickOrderItem  NOCHECK constraint all; 
+delete from ShipPickOrderItem;
+alter table ShipPickOrderItem  CHECK constraint all;
+truncate  TABLE ShipPickOrderItem;
+
+-- 启用外键
+SET FOREIGN_KEY_CHECKS=1; 
+
+
+alter table Inventory  NOCHECK constraint all; 
+delete from Inventory;
+alter table Inventory  CHECK constraint all;
+
+alter table InventoryAchieved  NOCHECK constraint all; 
+delete from InventoryAchieved;
+alter table InventoryAchieved  CHECK constraint all;
+
+alter table InventoryItem  NOCHECK constraint all; 
+delete from InventoryItem;
+alter table InventoryItem  CHECK constraint all;
+
+
+alter table InventoryItemAchieved  NOCHECK constraint all; 
+delete from InventoryItemAchieved;
+alter table InventoryItemAchieved  CHECK constraint all;
+
+
+alter table InventoryItemDetail  NOCHECK constraint all; 
+delete from InventoryItemDetail;
+alter table InventoryItemDetail  CHECK constraint all;
+
+
+alter table InventoryItemDetailAchieved  NOCHECK constraint all; 
+delete from InventoryItemDetailAchieved;
+alter table InventoryItemDetailAchieved  CHECK constraint all;
+
+
+select  *  from ApplyShipOrderItem
+
