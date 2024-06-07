@@ -30,7 +30,7 @@ public class UserController {
         return authentication;
     }
 
-    /*
+    /**
   没有加入白名单，需要认证权限
    */
     @GetMapping("/getCommonData")

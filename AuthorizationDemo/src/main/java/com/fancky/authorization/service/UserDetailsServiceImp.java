@@ -27,6 +27,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
     @PostConstruct
     public void initData() {
         String password = passwordEncoder.encode("123");
+        //替代 sys_user 表中的数据
         userList = new ArrayList<>();
 //        //模仿从获取库中获取用户信息和用户的权限信息
 //        userList.add(new UserInfo("admin", password, AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN")));
@@ -42,6 +43,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
        /*
+        UserInfo 实现 UserDetails 接口，提供用户名密码
         用户信息从数据库获取，校验密码信息。
         校验之后获取权限信息
         */
