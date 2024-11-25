@@ -31,8 +31,9 @@ public class UserController {
     }
 
     /**
-  没有加入白名单，需要认证权限
-   */
+     * ResourceServerConfig 配置类中配置白名单
+     *没有加入白名单，需要认证权限
+     */
     @GetMapping("/getCommonData")
 //    @PreAuthorize("hasAnyRole('ROLE_USER')")
     public Object getCommonData(Authentication authentication) {
@@ -40,21 +41,22 @@ public class UserController {
         return authentication;
     }
 
-    /*
-    需要认证权限
+    /**
+     *需要认证权限
      */
     @GetMapping("")
     public void user(Authentication authentication) {
         int m = 0;
     }
 
-    /*
-    加入白名单，不需要权限
+    /**
+     * ResourceServerConfig 配置类中配置白名单
+     *加入白名单，不需要权限
      */
     @GetMapping("/permitAccess")
-    public String permitAccess( Authentication authentication) {
+    public String permitAccess(Authentication authentication) {
 
-       return "permitAccess";
+        return "permitAccess";
     }
 //
 

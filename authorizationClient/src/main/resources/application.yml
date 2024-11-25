@@ -13,6 +13,8 @@ oauth2-server-url: http://localhost:9001/
 spring:
   application:
     name: oauth2-client
+#  main:
+#    allow-bean-definition-overriding: true
   datasource:
 
     #mysql
