@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth
 
 /**
  * 资源服务器
+ * 资源服务器配置白名单，测试方法在postman
  */
 
 //spring:
